@@ -1,0 +1,20 @@
+# List of the databases which may be used
+databases:
+    default:
+        type: mysql
+        host: localhost
+        name: archiver
+        user: archiver
+        password: verySecret
+
+database:
+    master: default
+    slaves:
+        - default
+
+read_only_file: /tmp/archiver-ro.lock
+
+log_file: /tmp/archiver.log
+log_level: debug
+log_format: "[%(asctime)-15s | PID %(process)d] %(levelname)s: %(message)s"
+
