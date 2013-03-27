@@ -10,11 +10,11 @@ CREATE TABLE data_objects (
 
     -- The key used to sort objects in order of their addition. This is useful,
     -- e.g. when doing incremental backups.
-	order_key int unsigned NOT NULL AUTO_INCREMENT,
+    order_key int unsigned NOT NULL AUTO_INCREMENT,
 
     -- Metadata like compression status of the object if we ever decide
     -- we need compression. Stored in JSON.
-	properties varchar(1024) binary NOT NULL,
+    properties varchar(1024) binary NOT NULL,
 
     -- Data itself!
     value longblob NOT NULL,
