@@ -28,17 +28,17 @@ class DataObject(database.Base):
         self.properties = '{}'
         self.value = value
 
-def get(hash):
+def get(db, hash):
     """Requests the object by its ID for reading."""
 
-    db = database.slave()
     return db.query(DataObject).get(hash)
 
-def add(value):
+def add(db, value):
     """Adds the value to the storage if it's not there yet. Returns the hash
     of the added value."""
 
-    db = database.master()
+    db.check_master()
+
     hash = _hash(value)
     if not db.query(DataObject).get(hash):
         obj = DataObject(hash, value)

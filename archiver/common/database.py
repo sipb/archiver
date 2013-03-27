@@ -9,26 +9,37 @@ import sqlalchemy
 import sqlalchemy.ext.declarative
 
 Base = sqlalchemy.ext.declarative.declarative_base()
+_session_class = sqlalchemy.orm.sessionmaker()
 
-_singleton_master = None
-_singleton_slave  = None
+# Engine cache, indexed by URL
+_engines = {}
 
 def _get_database(name):
     url = 'mysql://%(user)s:%(password)s@%(host)s/%(name)s' % config.get().databases[name]
-    engine = sqlalchemy.create_engine(url, echo=True)
-    session_class = sqlalchemy.orm.sessionmaker()
-    return session_class(bind=engine)
+    if url not in _engines:
+        _engines[url] = sqlalchemy.create_engine(url)
+    return _session_class(bind=_engines[url])
+
+def _noop():
+    pass
+
+def _master_fail():
+    raise ValueError("Called a writing method with a slave database")
 
 def master():
-    global _singleton_master
-    if not _singleton_master:
-        _singleton_master = _get_database(config.get().database['master'])
-    return _singleton_master
+    """Returns a new session with the master database."""
+
+    session = _get_database(config.get().database['master'])
+    session.is_master = True
+    session.check_master = _noop
+    return session
 
 def slave():
-    global _singleton_slave
-    if not _singleton_slave:
-        db = random.choice(config.get().database['slaves'])
-        _singleton_slave = _get_database(db)
-    return _singleton_slave
+    """Returns a new session with a slave database."""
+
+    db = random.choice(config.get().database['slaves'])
+    session = _get_database(db)
+    session.is_master = False
+    session.check_master = _master_fail
+    return session
 
