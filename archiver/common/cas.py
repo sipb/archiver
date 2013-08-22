@@ -28,6 +28,11 @@ class DataObject(database.Base):
         self.properties = '{}'
         self.value = value
 
+    def data():
+        """Returns the contents of the object."""
+
+        return self.value
+
 def get(db, hash):
     """Requests the object by its ID for reading."""
 
