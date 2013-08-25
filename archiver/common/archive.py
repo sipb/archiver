@@ -21,6 +21,6 @@ class Archive(database.Base):
     mod_acl = sql.Column(sql.Integer())
     read_acl = sql.Column(sql.Integer())
 
-def get_by_name(name, db):
+def get_by_name(db, name):
     return db.query(Archive).filter_by(name=name).first()
 

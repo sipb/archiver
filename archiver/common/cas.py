@@ -28,7 +28,7 @@ class DataObject(database.Base):
         self.properties = '{}'
         self.value = value
 
-    def data():
+    def data(self):
         """Returns the contents of the object."""
 
         return self.value
