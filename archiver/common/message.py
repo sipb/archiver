@@ -23,7 +23,6 @@ class ArchivedMessage(database.Base):
     timestamp = sql.Column(sql.DateTime())
     deleted = sql.Column(sql.Boolean())
     message_id = sql.Column(sql.VARBINARY(512))
-    sender = sql.Column(sql.VARBINARY(255))
     tree = sql.Column(sql.Binary(2**24))
 
     archive = orm.relationship("Archive", backref=orm.backref('messages', order_by=id))
@@ -100,7 +99,7 @@ class Party(database.Base):
         self.address = address
         self.value = value
 
-def from_message_object(db, msg, sender):
+def from_message_object(db, msg):
     """Creates an ArchivedMessage object from Message object from email.message
     module."""
 
@@ -110,7 +109,6 @@ def from_message_object(db, msg, sender):
     obj.timestamp = datetime.datetime.utcnow()
     obj.deleted = False
     obj.message_id = msg["Message-ID"]
-    obj.sender = sender
 
     obj.headers = [Header(obj, name, value) for name, value in msg.items()]
     for header in obj.headers:
@@ -139,10 +137,10 @@ def from_message_object(db, msg, sender):
 
     return obj
 
-def from_stream(db, fp, sender):
+def from_stream(db, fp):
     parser = email.parser.Parser()
     msg = parser.parse(fp)
-    return from_message_object(db, msg, sender)
+    return from_message_object(db, msg)
 
 def by_id(db, id):
     return db.query(ArchivedMessage).get(id)

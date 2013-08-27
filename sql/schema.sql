@@ -110,8 +110,6 @@ CREATE TABLE messages (
 
 	message_id VARBINARY(512) NOT NULL,
 
-	sender VARBINARY(255) NOT NULL,
-
 	-- A JSON description of the message MIME tree. Contains
 	-- the references to all the data objects which actually
 	-- have the contents of the email.
